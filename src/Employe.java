@@ -19,7 +19,7 @@ public class Employe {
 
     //getter
     public int getId(){return this.id;}
-    public String getnom(){return this.nom;}
+    public String getNom(){return this.nom;}
     public String getPrenom(){return this.prenom;}
     public String getPoste(){return this.poste;}
     public String getEmail(){return this.email;}
@@ -32,6 +32,7 @@ public class Employe {
 
     //métohde
     public void afficherDetails(){
+        System.out.println("Information Employé n°" + this.id + "\n|Prénom : " + this.prenom + "\n|Nom : " + this.nom + "\n|Poste : " + this.poste + "\n|email : " + this.email);
 
     }
 

@@ -32,10 +32,16 @@ public class Affectation {
 
     //méthodes
     public void afficherAffectation(){
-
+        System.out.println("Information Affectation" + "\\n|Immatriculation véhicule : " + this.vehicule.getImmatriculation() + "\n|Employé responsable : " + this.employe.getPrenom() + this.employe.getNom() + "\n|Date d'affectation  : " + this.dateAffectation + "\n|Date de retour : " + this.dateRetour + "\n|Actif : " + ((this.actif) ? "oui" : "non"));
     }
 
     public void terminerAffectation(){
-
+        if (!actif){
+            System.out.println ("l'affectation est DEJA pas active");
+        }
+        else{
+            actif = false;
+            System.out.println("l'affectation est terminer !");
+        }
     }
 }
