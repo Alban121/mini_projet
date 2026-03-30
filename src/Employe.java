@@ -31,7 +31,7 @@ public class Employe {
     public void setEmail(String newEmail){this.email = newEmail;}
 
     //métohde
-    public void afficherDetails(){
+    public void afficherDetail(){
         System.out.println("Information Employé n°" + this.id + "\n|Prénom : " + this.prenom + "\n|Nom : " + this.nom + "\n|Poste : " + this.poste + "\n|email : " + this.email);
 
     }

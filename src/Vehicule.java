@@ -71,7 +71,7 @@ public class Vehicule {
     }
 
     //Methode
-    public void afficherdetail(){
+    public void afficherDetail(){
         System.out.println("Information vehicule n°" + this.id + "\n|Marque : " + this.marque + "\n|Modele : " + this.modele + "\n|Immatriculation : " + this.immatriculation + "\n|Kilometrage : " + this.kilometrage + "\n|Disponible : " + ((this.disponible) ? "oui" : "non"));
     }
 
