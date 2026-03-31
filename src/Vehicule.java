@@ -1,6 +1,6 @@
 public class Vehicule {
     //Attributs
-    private int id;
+    private final int id;
     private String marque;
     private String modele;
     private String immatriculation;
@@ -17,12 +17,7 @@ public class Vehicule {
         this.disponible = disponible;
     }
     public Vehicule(int id, String marque, String modele, String immatriculation, int kilometrage){
-        this.id = id;
-        this.marque = marque;
-        this.modele = modele;
-        this.immatriculation = immatriculation;
-        this.kilometrage = kilometrage;
-        this.disponible = true;
+        this(id, marque, modele, immatriculation, kilometrage, true);//appelle le contructeur precedent avec disponible vrai
     }
 
     //Getter
@@ -36,7 +31,7 @@ public class Vehicule {
     //Setter
     public void setMarque(String newMarque) {
         String marqueTemoin = this.marque;
-        this.marque = newMarque;
+        this.marque = newMarque;//revoir tt les setters sont bizarres
         if (marqueTemoin != null && marqueTemoin.equals(this.marque)) {
             System.out.println("La valeur de marque est la meme\n");
         }

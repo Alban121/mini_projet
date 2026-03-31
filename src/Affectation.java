@@ -1,10 +1,10 @@
 public class Affectation {
     //Attributs
-    Vehicule vehicule;
-    Employe employe;
-    String dateAffectation;
-    String dateRetour;
-    boolean actif;
+    private Vehicule vehicule;
+    private Employe employe;
+    private String dateAffectation;
+    private String dateRetour;
+    private boolean actif;
 
 
     //Constructeur
@@ -31,8 +31,8 @@ public class Affectation {
     public void setActif(boolean newActif){this.actif = newActif;}
 
     //méthodes
-    public void afficherAffectation(){
-        System.out.println("Information Affectation" + "\\n|Immatriculation véhicule : " + this.vehicule.getImmatriculation() + "\n|Employé responsable : " + this.employe.getPrenom() + this.employe.getNom() + "\n|Date d'affectation  : " + this.dateAffectation + "\n|Date de retour : " + this.dateRetour + "\n|Actif : " + ((this.actif) ? "oui" : "non"));
+    public void afficherDetail(){
+        System.out.println("Information Affectation" + "\n|Immatriculation véhicule : " + this.vehicule.getImmatriculation() + "\n|Employé responsable : " + this.employe.getPrenom() + this.employe.getNom() + "\n|Date d'affectation  : " + this.dateAffectation + ((this.actif) ? "" : ("\n|Date de retour : " + this.dateRetour)));
     }
 
     public void terminerAffectation(){
