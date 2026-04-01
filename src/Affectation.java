@@ -1,14 +1,19 @@
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class Affectation {
     //Attributs
+    private int id;
     private Vehicule vehicule;
     private Employe employe;
-    private String dateAffectation;
-    private String dateRetour;
+    private LocalDateTime dateAffectation;
+    private LocalDateTime dateRetour;
     private boolean actif;
 
 
     //Constructeur
-    public Affectation(Vehicule vehicule, Employe employe, String dateAffectation, String dateRetour, boolean actif){
+    public Affectation(int id, Vehicule vehicule, Employe employe, LocalDateTime dateAffectation, LocalDateTime dateRetour, boolean actif) {
+        this.id = id;
         this.vehicule = vehicule;
         this.employe = employe;
         this.dateAffectation = dateAffectation;
@@ -17,31 +22,67 @@ public class Affectation {
     }
 
     //getter
-    public Vehicule getVehicule(){return this.vehicule;}
-    public Employe getEmploye(){return this.employe;}
-    public String getDateAffectation(){return this.dateAffectation;}
-    public String getDateRetour(){return this.dateRetour;}
-    public boolean getActif(){return this.actif;}
-
-    //setter
-    public void setVehicule(Vehicule newVehicule){this.vehicule = newVehicule;}
-    public void setEmploye(Employe newEmploye){this.employe = newEmploye;}
-    public void setDateAffectation(String newDateAffectation){this.dateAffectation = newDateAffectation;}
-    public void setDateRetour(String newDateRetour){this.dateRetour = newDateRetour;}
-    public void setActif(boolean newActif){this.actif = newActif;}
-
-    //méthodes
-    public void afficherDetail(){
-        System.out.println("Information Affectation" + "\n|Immatriculation véhicule : " + this.vehicule.getImmatriculation() + "\n|Employé responsable : " + this.employe.getPrenom() + this.employe.getNom() + "\n|Date d'affectation  : " + this.dateAffectation + ((this.actif) ? "" : ("\n|Date de retour : " + this.dateRetour)));
+    public int getId() {
+        return this.id;
     }
 
-    public void terminerAffectation(){
-        if (!actif){
-            System.out.println ("l'affectation est DEJA pas active");
+    public Vehicule getVehicule() {
+        return this.vehicule;
+    }
+
+    public Employe getEmploye() {
+        return this.employe;
+    }
+
+    public LocalDateTime getDateAffectation() {
+        return this.dateAffectation;
+    }
+
+    public LocalDateTime getDateRetour() {
+        return this.dateRetour;
+    }
+
+    public boolean getActif() {
+        return this.actif;
+    }
+
+    //setter
+    public void setVehicule(Vehicule newVehicule) {
+        this.vehicule = newVehicule;
+    }
+
+    public void setEmploye(Employe newEmploye) {
+        this.employe = newEmploye;
+    }
+
+    public void setDateAffectation(LocalDateTime newDateAffectation) {
+        this.dateAffectation = newDateAffectation;
+    }
+
+    public void setDateRetour(LocalDateTime newDateRetour) {
+        this.dateRetour = newDateRetour;
+    }
+
+    public void setActif(boolean newActif) {
+        this.actif = newActif;
+    }
+
+    //méthodes
+
+    @Override
+    public String toString() {
+        DateTimeFormatter formateur = DateTimeFormatter.ofPattern("dd/MM/yyyy 'à' HH:mm");
+        String dateAffectationFormate = this.dateAffectation.format(formateur);
+        String dateRetourFormate = "L affectation est encore active";
+        if (this.dateRetour != null) {
+            dateRetourFormate = this.dateRetour.format(formateur);
         }
-        else{
-            actif = false;
-            System.out.println("l'affectation est terminer !");
-        }
+        return "=== Détail de l'Affectation " + this.id + " ===\n" +
+                "| Statut         : " + (this.actif ? "EN COURS" : "TERMINÉE") + "\n" +
+                "| Employé        : " + this.employe.getPrenom() + " " + this.employe.getNom() + "\n" +
+                "| Véhicule       : " + this.vehicule.getMarque() + " " + this.vehicule.getModele() + " (" + this.vehicule.getImmatriculation() + ")\n" +
+                "| Date de début  : " + dateAffectationFormate + "\n" +
+                "| Date de retour : " + dateRetourFormate + "\n" +
+                "===============================";
     }
 }

@@ -66,8 +66,14 @@ public class Vehicule {
     }
 
     //Methode
-    public void afficherDetail(){
-        System.out.println("Information vehicule n°" + this.id + "\n|Marque : " + this.marque + "\n|Modele : " + this.modele + "\n|Immatriculation : " + this.immatriculation + "\n|Kilometrage : " + this.kilometrage + "\n|Disponible : " + ((this.disponible) ? "oui" : "non"));
+    @Override
+    public String toString() {
+        return "Information vehicule n°" + this.id +
+                "\n|Marque : " + this.marque +
+                "\n|Modele : " + this.modele +
+                "\n|Immatriculation : " + this.immatriculation +
+                "\n|Kilometrage : " + this.kilometrage +
+                "\n|Disponible : " + (this.disponible ? "oui" : "non");
     }
 
     public void affecter(Employe employe, Affectation affectation, String date){//potentiellement surcharge pour avoir la date par defaut

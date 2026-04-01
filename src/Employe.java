@@ -31,9 +31,13 @@ public class Employe {
     public void setEmail(String newEmail){this.email = newEmail;}
 
     //métohde
-    public void afficherDetail(){
-        System.out.println("Information Employé n°" + this.id + "\n|Prénom : " + this.prenom + "\n|Nom : " + this.nom + "\n|Poste : " + this.poste + "\n|email : " + this.email);
-
+    @Override
+    public String toString() {
+        return "Information Employé n°" + this.id +
+                "\n|Prénom : " + this.prenom +
+                "\n|Nom : " + this.nom +
+                "\n|Poste : " + this.poste +
+                "\n|Email : " + this.email;
     }
 
 

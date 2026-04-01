@@ -1,3 +1,4 @@
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Scanner;
@@ -29,6 +30,7 @@ public class ParcAutomobile {
             }
         }
     }
+
     private String recupererString(String stringDemande) {
         Scanner scanner = new Scanner(System.in);
         boolean valide = true;
@@ -44,6 +46,7 @@ public class ParcAutomobile {
         }
         return stringRecupere.trim();
     }
+
     private int faireChoix(String message, int min, int max) {
         do {
             int choix = recupererEntier(message);
@@ -68,6 +71,7 @@ public class ParcAutomobile {
                     menuVoiture();
                     break;
                 case 2:
+                    menuEmploye();
                     break;
                 case 3:
                     menuAffectation();
@@ -79,26 +83,34 @@ public class ParcAutomobile {
     }
 
     public void menuAffectation() {
-        Scanner scanner = new Scanner(System.in);
 
         do {
             System.out.println("\n=== GESTION DES AFFECTATIONS ===");
             System.out.println("1. Afficher les affectations");
             System.out.println("2. Ajouter une affectation ");
-            System.out.println("3. Historique des affectations");
-            System.out.println("4. Retour au menu principal");
-            int choix = faireChoix("Choisissez une option : ", 1, 4);
+            System.out.println("3. Terminer une affectation ");
+            System.out.println("4. Historique des affectations");
+            System.out.println("5. Retour au menu principal");
+            int choix = faireChoix("Choisissez une option : ", 1, 5);
             switch (choix) {
                 case 1:
                     afficherAffectation(true);//true pour les actives
                     break;
                 case 2:
-                    ajouterAffectation();
+                    Affectation affectation = creerAffectation();
+                    if (affectation != null) {
+                        ajouterAffectation(affectation);
+                    }
                     break;
                 case 3:
-                    afficherAffectation(false);//false pour l'historique
+                    if (!finirAffectation(recupererEntier("ID de l affectation a terminer ? La date actuelle sera applique en temps que date de retour"))){
+                        System.out.println("Id introuvable, impossible de terminer l affectation");
+                    }
                     break;
                 case 4:
+                    afficherAffectation(false);//false pour l'historique
+                    break;
+                case 5:
                     return;
             }
 
@@ -107,7 +119,7 @@ public class ParcAutomobile {
 
     public void menuVoiture() {
         do {
-            System.out.println("\n=== GESTION DES VEHICULE ===");
+            System.out.println("\n=== GESTION DES VEHICULES ===");
             System.out.println("1. Afficher les vehicules");
             System.out.println("2. Ajouter un vehicule ");
             System.out.println("3. Retirer un vehicule");
@@ -122,7 +134,33 @@ public class ParcAutomobile {
                     ajouterVehicule(creerVehicule());
                     break;
                 case 3:
-                    afficherAffectation(false);
+                    supprimerVehicule(recupererEntier("ID du vehicule a supprime ?"));
+                    break;
+                case 4:
+                    return;
+            }
+
+        } while (true);
+    }
+
+    public void menuEmploye(){
+        do {
+            System.out.println("\n=== GESTION DES EMPLOYES ===");
+            System.out.println("1. Afficher les employes");
+            System.out.println("2. Ajouter un employe ");
+            System.out.println("3. Retirer un employe");
+            System.out.println("4. Retour au menu principal");
+            int choix = faireChoix("Choisissez une option : ", 1, 4);
+
+            switch (choix) {
+                case 1:
+                    afficherEmploye();
+                    break;
+                case 2:
+                    ajouterEmploye(creerEmploye());
+                    break;
+                case 3:
+                    supprimerEmploye(recupererEntier("ID de l employe a supprime ?"));
                     break;
                 case 4:
                     return;
@@ -139,7 +177,7 @@ public class ParcAutomobile {
         String modele = recupererString("Entrez le modele : ");
         String immatriculation = recupererString("Entrez l immatriculation : ");
         int kilometrage = recupererEntier("Entrez le killometrage : ");
-        return new Vehicule(id, modele, modele, immatriculation, kilometrage);
+        return new Vehicule(id, marque, modele, immatriculation, kilometrage);
     }
 
     public void ajouterVehicule(Vehicule newVehicule) {
@@ -150,17 +188,16 @@ public class ParcAutomobile {
     }
 
     public void supprimerVehicule(int id) {
-        boolean supprimer = listeVehicule.removeIf(vehicule -> vehicule.getId() == id);
-        if (supprimer) {
+        if (listeVehicule.removeIf(vehicule -> vehicule.getId() == id && vehicule.getDisponible())) {
             System.out.println("Vehicule d id " + id + " a ete supprime avec succes.");
         } else {
-            System.out.println("Vehicule d id " + id + " introuvable, suppresion impossible.");
+            System.out.println("Le vehicule d id " + id + " est introuvable ou actuellement affecte, suppresion impossible.");
         }
     }
 
     public void retournerVehicule(int id) {
         Vehicule aRetourner = null;
-        for (Vehicule vehicule : this.listeVehicule) {
+        for (Vehicule vehicule : listeVehicule) {
             if (vehicule.getId() == id) {
                 aRetourner = vehicule;
                 break;
@@ -203,78 +240,96 @@ public class ParcAutomobile {
             } else {
                 System.out.println("\nTous les vehicules sont actuellement disponibles");
             }
+        }else {
+            System.out.println("Aucun vehicule enregistre dans la parc automobile");
         }
     }
 
-    public void rechercherVehiculeId(int id) {
+    public Vehicule rechercherVehiculeId(int id) {
         for (Vehicule vehicule : listeVehicule) {
             if (vehicule.getId() == id) {
-                vehicule.afficherDetail();
-                break; // break car seulement un vehicule par id
+                return vehicule;
             }
         }
+        return null;
     }
 
-    public void rechercherVehiculeKilometrage(int kilometrage) {
-        boolean auMoinsUn = true;
+    public Vehicule rechercherVehiculeImmatriculation(String immatriculation) {
         for (Vehicule vehicule : listeVehicule) {
-            if (vehicule.getKilometrage() <= kilometrage) {
-                if (auMoinsUn) {
-                    System.out.println("Vehicule ayant moins de " + kilometrage + " kilometres.");
-                    auMoinsUn = false;
-                }
-                vehicule.afficherDetail();
+            // Une plaque d'immatriculation est unique ! Donc on retourne directement l'objet
+            if (vehicule.getImmatriculation().equalsIgnoreCase(immatriculation)) {
+                return vehicule;
             }
         }
-        if (auMoinsUn) {
-            System.out.println("Aucun vehicule n'a moins de " + kilometrage + " kilometres.");
-        }
+        return null;
     }
 
-    public void rechercherVehiculeMarque(String marque) {
+    public ArrayList<Vehicule> rechercherVehiculeKilometrage(int kilometrageMax) {
+        ArrayList<Vehicule> resultats = new ArrayList<>();
         for (Vehicule vehicule : listeVehicule) {
-            if (vehicule.getMarque().equals(marque)) {
-                vehicule.afficherDetail();
+            if (vehicule.getKilometrage() <= kilometrageMax) {
+                resultats.add(vehicule);
             }
         }
+        return resultats;
     }
 
-    public void rechercherVehiculeModele(String modele) {
+    public ArrayList<Vehicule> rechercherVehiculeMarque(String marque) {
+        ArrayList<Vehicule> resultats = new ArrayList<>();
         for (Vehicule vehicule : listeVehicule) {
-            if (vehicule.getModele().equals(modele)) {
-                vehicule.afficherDetail();
+            if (vehicule.getMarque().equalsIgnoreCase(marque)) {
+                resultats.add(vehicule);
             }
         }
+        return resultats;
     }
 
-    public void rechercherVehiculeImmatriculation(String immatricualtion) {
+    public ArrayList<Vehicule> rechercherVehiculeModele(String modele) {
+        ArrayList<Vehicule> resultats = new ArrayList<>();
         for (Vehicule vehicule : listeVehicule) {
-            if (vehicule.getImmatriculation().equals(immatricualtion)) {
-                vehicule.afficherDetail();
-                break;//car unique
+            if (vehicule.getModele().equalsIgnoreCase(modele)) {
+                resultats.add(vehicule);
             }
         }
+        return resultats;
     }
 
     //Employe
-    public void ajouterEmploye(Employe newEmploye) {
-        listeEmploye.add(newEmploye);
-        System.out.println("Un nouvel employe a ete ajoute.\nSon id est : " + newEmploye.getId() + ".");
-        listeEmploye.sort(Comparator.comparing(Employe::getNom));
+    public Employe creerEmploye(){
+        System.out.println("--- Creation d un nouvel employe ---");
+        int id = recupererEntier("Entrez l ID : ");//rajouter un check sur l id pour qu il soit unique
+        String nom = recupererString("Entrez le nom : ");
+        String prenom = recupererString("Entrez le prenom : ");
+        String poste = recupererString("Entrez le poste : ");
+        String email = recupererString("Entrez l email : ");
+        return new Employe(id, nom, prenom, poste, email);
     }
 
+    public void ajouterEmploye(Employe newEmploye) {
+        listeEmploye.add(newEmploye);
+        System.out.println("Un nouvel employe a ete ajoute.");
+        //listeEmploye.sort(Comparator.comparing(Employe::getNom));
+    }
+
+
     public void supprimerEmploye(int id) {
-        boolean supprimer = listeEmploye.removeIf(employe -> employe.getId() == id);
-        if (supprimer) {
+        for (Affectation affectation : listeAffectation) {
+            if (affectation.getEmploye().getId() == id && affectation.getActif()) {
+                System.out.println("Suppression impossible : Cet employe a au moins une affectation en cours !");
+                return;
+            }
+        }
+
+        if (listeEmploye.removeIf(employe -> employe.getId() == id)) {
             System.out.println("Employe d id " + id + " a ete supprime avec succes.");
         } else {
-            System.out.println("Employe d id " + id + " introuvable, suppresion impossible.");
+            System.out.println("Employe introuvable.");
         }
     }
 
     public void afficherEmploye() {
         if (!this.listeEmploye.isEmpty()) {
-            int compteur = 0;
+            listeEmploye.sort(Comparator.comparing(Employe::getNom));
             System.out.println("Employe du parc automobile : " +
                     "\n(pour plus d informations sur un employe en particulier utilise la fonction de recherche par id)");
             System.out.println("\tID\t\tNom\t\tPrenom");
@@ -286,37 +341,43 @@ public class ParcAutomobile {
         }
     }
 
-    public void rechercherEmployeId(int id) {
+    public Employe rechercherEmployeId(int id) {
         for (Employe employe : listeEmploye) {
             if (employe.getId() == id) {
-                employe.afficherDetail();
-                break; // break car seulement un vehicule par id
+                return employe;
             }
         }
+        return null;
     }
 
-    public void rechercherEmployeNom(String nom) {
+    public ArrayList<Employe> rechercherEmployesParNom(String nom) {
+        ArrayList<Employe> resultats = new ArrayList<>();
         for (Employe employe : listeEmploye) {
-            if (employe.getNom().equals(nom)) {
-                employe.afficherDetail();
+            if (employe.getNom().equalsIgnoreCase(nom)) {
+                resultats.add(employe);
             }
         }
+        return resultats;
     }
 
-    public void rechercherEmployePrenom(String prenom) {
+    public ArrayList<Employe> rechercherEmployesParPrenom(String prenom) {
+        ArrayList<Employe> resultats = new ArrayList<>();
         for (Employe employe : listeEmploye) {
-            if (employe.getPrenom().equals(prenom)) {
-                employe.afficherDetail();
+            if (employe.getPrenom().equalsIgnoreCase(prenom)) {
+                resultats.add(employe);
             }
         }
+        return resultats;
     }
 
-    public void rechercherEmployePoste(String poste) {
+    public ArrayList<Employe> rechercherEmployesParPoste(String poste) {
+        ArrayList<Employe> resultats = new ArrayList<>();
         for (Employe employe : listeEmploye) {
-            if (employe.getNom().equals(poste)) {
-                employe.afficherDetail();
+            if (employe.getPoste().equalsIgnoreCase(poste)) {
+                resultats.add(employe);
             }
         }
+        return resultats;
     }
 
     //Affectation
@@ -346,8 +407,8 @@ public class ParcAutomobile {
             System.out.println(titre);
 
             for (Affectation affectation : listeAffectation) {
-                if (affectation.getActif()) {
-                    affectation.afficherDetail();
+                if (affectation.getActif() == active) {
+                    System.out.println(affectation);
                     auMoinsUn = true;
                 }
             }
@@ -357,8 +418,53 @@ public class ParcAutomobile {
         }
     }
 
-    public void ajouterAffectation() {
-        System.out.println("Pas code");
+    public Affectation creerAffectation() {
+        if (listeVehicule.isEmpty() || listeEmploye.isEmpty()) {
+            System.out.println("Il n y a pas de vehicule disponible ou d employe");
+            return null;
+        }
+
+        System.out.println("=== CREATION D UNE NOUVLLE AFFECTATION ===");
+        while (true) {
+            int idEmploye = recupererEntier("Quel est l ID de l employe ?");
+            int idVehicule = recupererEntier("Quel est l ID du vehicule");
+            int idAffectation = recupererEntier("Quel est l id de l affectation");
+
+            Vehicule vehicule = rechercherVehiculeId(idVehicule);
+            Employe employe = rechercherEmployeId(idEmploye);
+            if (vehicule != null && employe != null) {
+                if (vehicule.getDisponible()){
+                    vehicule.setDisponible(false);
+                    return new Affectation(idAffectation, vehicule, employe, LocalDateTime.now(), null, true);
+                } else {
+                    System.out.println("Vehicule choisi indisponible");
+                }
+            }else {
+                System.out.println("ID employe ou ID vehicule introuvable.");
+            }
+            int choix = recupererEntier("Tapez 0 pour reessayer, ou 1 pour annuler et quitter : ");
+            if (choix == 1) {
+                System.out.println("Création d affectation annulee.");
+                return null;
+            }
+        }
+
+    }
+
+    public void ajouterAffectation(Affectation nouvelleAffectation) {
+        listeAffectation.add(nouvelleAffectation);
+    }
+
+    public boolean finirAffectation(int id){
+        for (Affectation affectation : listeAffectation){
+            if (affectation.getId() == id){
+                affectation.setActif(false);
+                affectation.getVehicule().setDisponible(true);
+                affectation.setDateRetour(LocalDateTime.now());
+                return true;
+            }
+        }
+        return false;
     }
 
 }
