@@ -9,6 +9,9 @@ public class ParcAutomobile {
     private ArrayList<Employe> listeEmploye;
     private ArrayList<Affectation> listeAffectation;
 
+    public static final String RESET = "\u001B[0m";
+    public static final String ROUGE = "\u001B[31m";
+
     //Constructeurs
     public ParcAutomobile() {
         this.listeVehicule = new ArrayList<>();
@@ -239,28 +242,15 @@ public class ParcAutomobile {
         System.out.println("Vehicule d id " + id + " a ete supprime avec succes.");
     }
 
-    public void retournerVehicule(int id) {
-        Vehicule aRetourner = null;
-        for (Vehicule vehicule : listeVehicule) {
-            if (vehicule.getId() == id) {
-                aRetourner = vehicule;
-                break;
-            }
-        }
-        if (aRetourner != null) {
-            aRetourner.setDisponible(true);
-            System.out.println("Vehicule d id : " + id + " retourner avec succes.");
-        } else {
-            System.out.println("Vehicule d id : " + id + " introuvable, retour impossible.");
-        }
-    }
 
     public void afficherVehicule(ArrayList<Vehicule> listeVehiculeAfficher) {
         if (!listeVehiculeAfficher.isEmpty()) {
             listeVehiculeAfficher.sort(Comparator.comparing(Vehicule::getMarque));
             int compteur = 0;
             System.out.println("Vehicule du parc automobile : " +
+                    "\nIl y a " + Vehicule.nbVehicule + " vehicules : " + Voiture.nbVoiture + " voitures, " + Moto.nbMoto + " motos, " + Utilitaire.nbUtilitaire + " utilitaires"+
                     "\n(pour plus d informations sur un vehicule en particulier utilise la fonction de recherche par id)");
+
             System.out.println("\n Actuellement disponible : ");
             System.out.println("\tID\t\tMarque\t\tModele");
             for (Vehicule vehicule : listeVehiculeAfficher) {
@@ -273,6 +263,8 @@ public class ParcAutomobile {
             if (compteur != listeVehiculeAfficher.size()) {
                 if (compteur == 0) {
                     System.out.println("Aucune voiture disponible pour le moment");
+                }else {
+                    System.out.println(compteur + " vehicules disponible actuellement");
                 }
                 System.out.println("\n Actuellement indisponible : ");
                 System.out.println("\tID\t\tMarque\t\tModele");
@@ -281,6 +273,7 @@ public class ParcAutomobile {
                         System.out.println("\t" + vehicule.getId() + "\t\t" + vehicule.getMarque() + "\t\t" + vehicule.getModele());
                     }
                 }
+                System.out.println((compteur - Vehicule.nbVehicule) + " vehicule actuellement indisponible");
             } else {
                 System.out.println("\nTous les vehicules sont actuellement disponibles");
             }
@@ -544,6 +537,11 @@ public class ParcAutomobile {
                 affectation.setActif(false);
                 affectation.getVehicule().setDisponible(true);
                 affectation.setDateRetour(LocalDateTime.now());
+                int augmentationKm = recupererEntier("Kilometrage effectue");
+                affectation.getVehicule().setKilometrage(affectation.getVehicule().getKilometrage() + augmentationKm);
+                if(augmentationKm >= 10000){//limite kilometrage
+                    System.out.println("\u001B[31m" + "Le kilometrage effectue necessite une revision " + "\u001B[0m");
+                }
                 return true;
             }
         }
