@@ -1,5 +1,6 @@
-sealed abstract class Vehicule permits Utilitaire, Moto, Voiture {
+public sealed abstract class Vehicule permits Utilitaire, Moto, Voiture {
     //Attributs
+    public static int nbVehicule = 0;
     private final int id;
     private String marque;
     private String modele;
@@ -30,39 +31,23 @@ sealed abstract class Vehicule permits Utilitaire, Moto, Voiture {
 
     //Setter
     public void setMarque(String newMarque) {
-        String marqueTemoin = this.marque;
-        this.marque = newMarque;//revoir tt les setters sont bizarres
-        if (marqueTemoin != null && marqueTemoin.equals(this.marque)) {
-            System.out.println("La valeur de marque est la meme\n");
-        }
+        this.marque = newMarque;
     }
     public void setModele(String newModele) {
-        String modeleTemoin = this.modele;
         this.modele = newModele;
-        if (modeleTemoin != null && modeleTemoin.equals(this.modele)) {
-            System.out.println("La valeur de modele est la meme\n");
-        }
     }
     public void setImmatriculation(String newImmatriculation) {
-        String immatriculationTemoin = this.immatriculation;
         this.immatriculation = newImmatriculation;
-        if (immatriculationTemoin != null && immatriculationTemoin.equals(this.immatriculation)) {
-            System.out.println("La valeur de immatriculation est la meme\n");
-        }
     }
     public void setKilometrage(int newKilometrage) {
-        int kilometrageTemoin = this.kilometrage;
-        this.kilometrage = newKilometrage;
-        if (kilometrageTemoin == this.kilometrage) {
-            System.out.println("La valeur de kilometrage est la meme\n");
+        if (newKilometrage < this.kilometrage) {
+            System.out.println("La valeur de kilometrage ne peut pas etre inferieur a la valeur precedente\n");
+        }else {
+            this.kilometrage = newKilometrage;
         }
     }
     public void setDisponible(boolean newDisponible) {
-        boolean disponibleTemoin = this.disponible;
         this.disponible = newDisponible;
-        if (disponibleTemoin == this.disponible) {
-            System.out.println("La valeur de disponible est la meme\n");
-        }
     }
 
     //Methode

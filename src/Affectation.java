@@ -80,7 +80,7 @@ public class Affectation {
         return "=== Détail de l'Affectation " + this.id + " ===\n" +
                 "| Statut         : " + (this.actif ? "EN COURS" : "TERMINÉE") + "\n" +
                 "| Employé        : " + this.employe.getPrenom() + " " + this.employe.getNom() + "\n" +
-                "| Véhicule       : " + this.vehicule.getMarque() + " " + this.vehicule.getModele() + " (" + this.vehicule.getImmatriculation() + ")\n" +
+                "| "+ this.vehicule.getClass().getSimpleName() +"       : " + this.vehicule.getMarque() + " " + this.vehicule.getModele() + " (" + this.vehicule.getImmatriculation() + ")\n" +
                 "| Date de début  : " + dateAffectationFormate + "\n" +
                 "| Date de retour : " + dateRetourFormate + "\n" +
                 "===============================";

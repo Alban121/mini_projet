@@ -123,12 +123,13 @@ public class ParcAutomobile {
             System.out.println("1. Afficher les vehicules");
             System.out.println("2. Ajouter un vehicule ");
             System.out.println("3. Retirer un vehicule");
-            System.out.println("4. Retour au menu principal");
-            int choix = faireChoix("Choisissez une option : ", 1, 4);
+            System.out.println("4. Rechercher un vehicule");
+            System.out.println("5. Retour au menu principal");
+            int choix = faireChoix("Choisissez une option : ", 1, 5);
 
             switch (choix) {
                 case 1:
-                    afficherVehicule();
+                    afficherVehicule(listeVehicule);
                     break;
                 case 2:
                     ajouterVehicule(creerVehicule());
@@ -137,6 +138,9 @@ public class ParcAutomobile {
                     supprimerVehicule(recupererEntier("ID du vehicule a supprime ?"));
                     break;
                 case 4:
+                    rechercherVehicule();
+                    break;
+                case 5:
                     return;
             }
 
@@ -208,11 +212,31 @@ public class ParcAutomobile {
     }
 
     public void supprimerVehicule(int id) {
-        if (listeVehicule.removeIf(vehicule -> vehicule.getId() == id && vehicule.getDisponible())) {
-            System.out.println("Vehicule d id " + id + " a ete supprime avec succes.");
-        } else {
-            System.out.println("Le vehicule d id " + id + " est introuvable ou actuellement affecte, suppresion impossible.");
+        Vehicule aSupp = null;
+        for (Vehicule v : listeVehicule){
+            if (v.getId() == id && v.getDisponible()){
+                aSupp = v;
+                break;
+            }
         }
+        if (aSupp == null){
+            System.out.println("Le vehicule d id " + id + " est introuvable ou actuellement affecte, suppresion impossible.");
+            return;
+        }
+        switch (aSupp.getClass().getSimpleName()){
+            case "Voiture":
+                Voiture.nbVoiture--;
+                break;
+            case "Moto":
+                Moto.nbMoto--;
+                break;
+            case "Utilitaire":
+                Utilitaire.nbUtilitaire--;
+                break;
+        }
+        Vehicule.nbVehicule--;
+        listeVehicule.remove(aSupp);
+        System.out.println("Vehicule d id " + id + " a ete supprime avec succes.");
     }
 
     public void retournerVehicule(int id) {
@@ -231,28 +255,28 @@ public class ParcAutomobile {
         }
     }
 
-    public void afficherVehicule() {
-        if (!listeVehicule.isEmpty()) {
-            listeVehicule.sort(Comparator.comparing(Vehicule::getMarque));
+    public void afficherVehicule(ArrayList<Vehicule> listeVehiculeAfficher) {
+        if (!listeVehiculeAfficher.isEmpty()) {
+            listeVehiculeAfficher.sort(Comparator.comparing(Vehicule::getMarque));
             int compteur = 0;
             System.out.println("Vehicule du parc automobile : " +
                     "\n(pour plus d informations sur un vehicule en particulier utilise la fonction de recherche par id)");
             System.out.println("\n Actuellement disponible : ");
             System.out.println("\tID\t\tMarque\t\tModele");
-            for (Vehicule vehicule : listeVehicule) {
+            for (Vehicule vehicule : listeVehiculeAfficher) {
                 if (vehicule.getDisponible()) {
                     System.out.println("\t" + vehicule.getId() + "\t\t" + vehicule.getMarque() + "\t\t" + vehicule.getModele());
                     compteur++;
                 }
             }
 
-            if (compteur != listeVehicule.size()) {
+            if (compteur != listeVehiculeAfficher.size()) {
                 if (compteur == 0) {
                     System.out.println("Aucune voiture disponible pour le moment");
                 }
                 System.out.println("\n Actuellement indisponible : ");
                 System.out.println("\tID\t\tMarque\t\tModele");
-                for (Vehicule vehicule : listeVehicule) {
+                for (Vehicule vehicule : listeVehiculeAfficher) {
                     if (!vehicule.getDisponible()) {
                         System.out.println("\t" + vehicule.getId() + "\t\t" + vehicule.getMarque() + "\t\t" + vehicule.getModele());
                     }
@@ -264,9 +288,63 @@ public class ParcAutomobile {
             System.out.println("Aucun vehicule enregistre dans la parc automobile");
         }
     }
+    public void rechercherVehicule(){
+        do {
+            System.out.println("Quel type de recherche voulez vous faire ?\n 1 : id. 2 : immatriculation 3 : Critere multiples\n4 : quitter la recherche");
+            int choix = faireChoix("Choisissez une option", 1, 4);
+            switch (choix){
+                case 1:
+                    System.out.println(rechercherVehiculeId(listeVehicule, recupererEntier("Id du vehicule recherche ?")));
+                    break;
+                case 2:
+                    System.out.println(rechercherVehiculeImmatriculation(listeVehicule, recupererString("Immatriculation du vehicule recherche ?")));
+                    break;
+                case 3:
+                    rechercheVehiculeMultiCritere();
+                    break;
+                case 4:
+                    return;
+            }
+        }while (true);
+    }
 
-    public Vehicule rechercherVehiculeId(int id) {
-        for (Vehicule vehicule : listeVehicule) {
+    public void rechercheVehiculeMultiCritere() {
+        ArrayList<Vehicule> listeFiltree = new ArrayList<>(this.listeVehicule);
+
+        while (true) {
+            System.out.println("\n=== RECHERCHE AVANCÉE (" + listeFiltree.size() + " résultat(s) trouvé(s)) ===");
+            afficherVehicule(listeFiltree);
+
+            System.out.println("\nQue souhaitez-vous faire ?");
+            System.out.println("1. Ajouter un filtre : Marque");
+            System.out.println("2. Ajouter un filtre : Kilométrage max");
+            System.out.println("3. Réinitialiser la recherche (Tout voir)");
+            System.out.println("4. Quitter la recherche");
+
+            int choix = faireChoix("Votre choix : ", 1, 4);
+
+            switch (choix){
+                case 1:
+                String marque = recupererString("Quelle marque recherchez-vous ? : ");
+                listeFiltree = rechercherVehiculeMarque(listeFiltree, marque);
+                break;
+
+                case 2:
+                    int kmMax = recupererEntier("Kilométrage maximum autorisé ? : ");
+                listeFiltree = rechercherVehiculeKilometrage(listeFiltree, kmMax);
+                break;
+
+                case 3:
+                listeFiltree = new ArrayList<>(this.listeVehicule);
+                System.out.println("Filtres réinitialisés.");
+                break;
+                case 4:
+                    return;
+            }
+        }
+    }
+    public Vehicule rechercherVehiculeId(ArrayList<Vehicule> listeSource, int id) {
+        for (Vehicule vehicule : listeSource) {
             if (vehicule.getId() == id) {
                 return vehicule;
             }
@@ -274,9 +352,8 @@ public class ParcAutomobile {
         return null;
     }
 
-    public Vehicule rechercherVehiculeImmatriculation(String immatriculation) {
-        for (Vehicule vehicule : listeVehicule) {
-            // Une plaque d'immatriculation est unique ! Donc on retourne directement l'objet
+    public Vehicule rechercherVehiculeImmatriculation(ArrayList<Vehicule> listeSource, String immatriculation) {
+        for (Vehicule vehicule : listeSource) {
             if (vehicule.getImmatriculation().equalsIgnoreCase(immatriculation)) {
                 return vehicule;
             }
@@ -284,9 +361,9 @@ public class ParcAutomobile {
         return null;
     }
 
-    public ArrayList<Vehicule> rechercherVehiculeKilometrage(int kilometrageMax) {
+    public ArrayList<Vehicule> rechercherVehiculeKilometrage(ArrayList<Vehicule> listeSource, int kilometrageMax) {
         ArrayList<Vehicule> resultats = new ArrayList<>();
-        for (Vehicule vehicule : listeVehicule) {
+        for (Vehicule vehicule : listeSource) {
             if (vehicule.getKilometrage() <= kilometrageMax) {
                 resultats.add(vehicule);
             }
@@ -294,9 +371,9 @@ public class ParcAutomobile {
         return resultats;
     }
 
-    public ArrayList<Vehicule> rechercherVehiculeMarque(String marque) {
+    public ArrayList<Vehicule> rechercherVehiculeMarque(ArrayList<Vehicule> listeSource, String marque) {
         ArrayList<Vehicule> resultats = new ArrayList<>();
-        for (Vehicule vehicule : listeVehicule) {
+        for (Vehicule vehicule : listeSource) {
             if (vehicule.getMarque().equalsIgnoreCase(marque)) {
                 resultats.add(vehicule);
             }
@@ -304,9 +381,9 @@ public class ParcAutomobile {
         return resultats;
     }
 
-    public ArrayList<Vehicule> rechercherVehiculeModele(String modele) {
+    public ArrayList<Vehicule> rechercherVehiculeModele(ArrayList<Vehicule> listeSource, String modele) {
         ArrayList<Vehicule> resultats = new ArrayList<>();
-        for (Vehicule vehicule : listeVehicule) {
+        for (Vehicule vehicule : listeSource) {
             if (vehicule.getModele().equalsIgnoreCase(modele)) {
                 resultats.add(vehicule);
             }
@@ -401,21 +478,7 @@ public class ParcAutomobile {
     }
 
     //Affectation
-        /*public void afficherAffectation() {
-            // 1. On vérifie d'abord s'il y a au moins une affectation active
-            boolean aUneAffectationActive = listeAffectation.stream()
-                    .anyMatch(Affectation::getActif);
 
-            // 2. On affiche le résultat en fonction
-            if (!aUneAffectationActive) {
-                System.out.println("Aucune affectation actuellement en cours.");
-            } else {
-                System.out.println("=== Affectations en cours ===");
-                listeAffectation.stream()
-                        .filter(Affectation::getActif) // On garde que les actives
-                        .forEach(Affectation::afficherDetail); // On les affiche
-            }
-        }*/
     public void afficherAffectation(boolean active) {//True pour afficher les actives, False pour l'historique
         String messageVide = (active ? "Aucune affectation actuellement en cours." : "Aucune affectation dans l'historique.");
         String titre = (active ? "=== Affectations en cours ===" : "=== Historique des affectations ===");
@@ -450,7 +513,7 @@ public class ParcAutomobile {
             int idVehicule = recupererEntier("Quel est l ID du vehicule");
             int idAffectation = recupererEntier("Quel est l id de l affectation");
 
-            Vehicule vehicule = rechercherVehiculeId(idVehicule);
+            Vehicule vehicule = rechercherVehiculeId(listeVehicule,idVehicule);
             Employe employe = rechercherEmployeId(idEmploye);
             if (vehicule != null && employe != null) {
                 if (vehicule.getDisponible()){
