@@ -172,12 +172,32 @@ public class ParcAutomobile {
     //Vehicule
     public Vehicule creerVehicule() {
         System.out.println("--- Ajout d'un nouveau véhicule ---");
+
+        // 1. On demande le type en premier
+        System.out.println("Quel type de véhicule souhaitez-vous ajouter ?");
+        System.out.println("1. Voiture");
+        System.out.println("2. Utilitaire");
+        System.out.println("3. Moto");
+        int type = faireChoix("Votre choix : ", 1, 3);
+
         int id = recupererEntier("Entrez l ID : ");
         String marque = recupererString("Entrez la marque : ");
         String modele = recupererString("Entrez le modele : ");
         String immatriculation = recupererString("Entrez l immatriculation : ");
         int kilometrage = recupererEntier("Entrez le killometrage : ");
-        return new Vehicule(id, marque, modele, immatriculation, kilometrage);
+
+        if (type == 1) {
+            int portes = recupererEntier("Entrez le nombre de portes : ");
+            return new Voiture(id, marque, modele, immatriculation, kilometrage, portes);
+        }
+        else if (type == 2) {
+            int taille = recupererEntier("Entrez la taille de l utilitaire (en cm) : ");
+            return new Utilitaire(id, marque, modele, immatriculation, kilometrage, taille);
+        }
+        else {
+            int cylindree = recupererEntier("Entrez la cylindrée (en cc) : ");
+            return new Moto(id,  marque, modele, immatriculation, kilometrage, cylindree);
+        }
     }
 
     public void ajouterVehicule(Vehicule newVehicule) {

@@ -1,4 +1,4 @@
-public class Vehicule {
+sealed abstract class Vehicule permits Utilitaire, Moto, Voiture {
     //Attributs
     private final int id;
     private String marque;
