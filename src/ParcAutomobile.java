@@ -8,9 +8,9 @@ import java.io.FileNotFoundException;
 
 public class ParcAutomobile {
     //Attributs
-    private ArrayList<Vehicule> listeVehicule;
-    private ArrayList<Employe> listeEmploye;
-    private ArrayList<Affectation> listeAffectation;
+    private final ArrayList<Vehicule> listeVehicule;
+    private final ArrayList<Employe> listeEmploye;
+    private final ArrayList<Affectation> listeAffectation;
     public static int nbVehiculeDisponible = 0;
 
     // RESET = "\u001B[0m";
@@ -328,7 +328,7 @@ public class ParcAutomobile {
                     "\n(pour plus d informations sur un vehicule en particulier utilise la fonction de recherche par id)");
             //Affichage des vehicules disponibles separe par type et rier dans l'odre alphabetique selon la marque
             if (ParcAutomobile.nbVehiculeDisponible != 0){
-                System.out.println("\n Actuellement disponible "+ "(" + ParcAutomobile.nbVehiculeDisponible + ") : ");
+                System.out.println("\n Actuellement disponible dans la parc "+ "(" + ParcAutomobile.nbVehiculeDisponible + ") : ");
                 System.out.println("\tID\t\tMarque\t\tModele");
                 for (Vehicule vehicule : listeVehiculeAfficher){
                     if (vehicule instanceof Voiture){voitureArrayList.add(vehicule);}else
