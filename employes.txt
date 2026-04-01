@@ -1,0 +1,2 @@
+1;Dupont;Jean;Commercial;jean.dupont@email.com
+2;Martin;Alice;Directrice;alice.martin@email.com

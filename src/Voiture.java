@@ -6,8 +6,6 @@ final class Voiture extends Vehicule{
         super( id, marque,  modele,  immatriculation,  kilometrage);
         this.nbPorte = nbPorte;
         nbVoiture++;
-        Vehicule.nbVehicule++;
-
     }
 
     @Override

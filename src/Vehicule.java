@@ -17,6 +17,7 @@ public sealed abstract class Vehicule permits Utilitaire, Moto, Voiture {
         this.kilometrage = kilometrage;
         this.disponible = disponible;
         ParcAutomobile.nbVehiculeDisponible++;
+        Vehicule.nbVehicule++;
     }
     public Vehicule(int id, String marque, String modele, String immatriculation, int kilometrage){
         this(id, marque, modele, immatriculation, kilometrage, true);//appelle le contructeur precedent avec disponible vrai
@@ -60,9 +61,5 @@ public sealed abstract class Vehicule permits Utilitaire, Moto, Voiture {
                 "\n|Immatriculation : " + this.immatriculation +
                 "\n|Kilometrage : " + this.kilometrage +
                 "\n|Disponible : " + (this.disponible ? "oui" : "non");
-    }
-
-    public void affecter(Employe employe, Affectation affectation, String date){//potentiellement surcharge pour avoir la date par defaut
-
     }
 }

@@ -6,7 +6,6 @@ final class Moto extends Vehicule{
         super( id, marque,  modele,  immatriculation,  kilometrage);
         this.cylindre = cylindre;
         nbMoto++;
-        Vehicule.nbVehicule++;
     }
 
     @Override

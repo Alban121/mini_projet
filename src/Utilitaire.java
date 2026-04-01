@@ -6,7 +6,6 @@ final class Utilitaire extends Vehicule {
         super( id, marque,  modele,  immatriculation,  kilometrage);
         this.taille = taille;
         nbUtilitaire++;
-        Vehicule.nbVehicule++;
     }
 
     @Override

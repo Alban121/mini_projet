@@ -3,6 +3,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Scanner;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 public class ParcAutomobile {
     //Attributs
@@ -176,6 +178,73 @@ public class ParcAutomobile {
             }
 
         } while (true);
+    }
+
+    //Chargempent fichier .txt
+    public void chargerEmployes() {
+        try {
+            File fichier = new File("employes.txt");
+            Scanner lecteurFichier = new Scanner(fichier);
+
+            while (lecteurFichier.hasNextLine()) {
+                String ligne = lecteurFichier.nextLine();
+                String[] donnees = ligne.split(";"); // Découpe la ligne dans un tableau, chaque case est une variable
+
+                if (donnees.length == 5) {
+                    int id = Integer.parseInt(donnees[0]);
+                    String nom = donnees[1];
+                    String prenom = donnees[2];
+                    String poste = donnees[3];
+                    String email = donnees[4];
+
+                    this.listeEmploye.add(new Employe(id, nom, prenom, poste, email));
+                }
+            }
+            lecteurFichier.close();
+            System.out.println("Base d'employes chargee !");
+
+        } catch (FileNotFoundException e) {
+            System.out.println("Fichier employes.txt introuvable. Liste vide.");
+        }
+    }
+
+    public void chargerVehicules() {
+        try {
+            File fichier = new File("vehicules.txt");
+            Scanner lecteurFichier = new Scanner(fichier);
+
+            while (lecteurFichier.hasNextLine()) {
+                String ligne = lecteurFichier.nextLine();
+                String[] donnees = ligne.split(";");
+
+                if (donnees.length == 7) {
+                    String type = donnees[0];
+                    int id = Integer.parseInt(donnees[1]);
+                    String marque = donnees[2];
+                    String modele = donnees[3];
+                    String immatriculation = donnees[4];
+                    int kilometrage = Integer.parseInt(donnees[5]);
+                    int specifique = Integer.parseInt(donnees[6]); // Portes, Cylindrée ou Taille
+
+                    switch (type) {
+                        case "Voiture":
+                            this.listeVehicule.add(new Voiture(id, marque, modele, immatriculation, kilometrage, specifique));
+                            break;
+                        case "Moto":
+                            this.listeVehicule.add(new Moto(id, marque, modele, immatriculation, kilometrage, specifique));
+                            break;
+                        case "Utilitaire":
+                            this.listeVehicule.add(new Utilitaire(id, marque, modele, immatriculation, kilometrage, specifique));
+                            break;
+                    }
+                }
+            }
+            lecteurFichier.close();
+            System.out.println("Base de vehicules chargee !");
+
+        } catch (FileNotFoundException e) {
+            System.out.println("Fichier vehicules.txt introuvable. Liste vide.");
+        }
     }
 
     //Vehicule
@@ -412,7 +481,7 @@ public class ParcAutomobile {
     public ArrayList<Vehicule> rechercherVehiculeType(ArrayList<Vehicule> listeSource, String type) {
         ArrayList<Vehicule> resultats = new ArrayList<>();
         for (Vehicule vehicule : listeSource) {
-            if (vehicule.getClass().getSimpleName().equals(type)){
+            if (vehicule.getClass().getSimpleName().equalsIgnoreCase(type)){
                 resultats.add(vehicule);
             }
         }
@@ -514,6 +583,7 @@ public class ParcAutomobile {
         if (listeAffectation.isEmpty()) {
             System.out.println(messageVide);
         } else {
+            listeAffectation.sort(Comparator.comparing(Affectation::getDateAffectation).reversed());//trie des affectations dans l'ordre plus recent au plus ancien
             boolean auMoinsUn = false;
             System.out.println(titre);
 
@@ -530,7 +600,6 @@ public class ParcAutomobile {
     }
 
     public Affectation creerAffectation() {
-        //test si c'est possible de faire une affectation
         if (listeVehicule.isEmpty() || listeEmploye.isEmpty()) {
             System.out.println("Il n y a pas de vehicule disponible ou d employe");
             return null;
@@ -551,7 +620,7 @@ public class ParcAutomobile {
                         limite++;
                     }
                 }
-                if (limite < 3){
+                if (limite < Variable.LIMITEAFFECTATIONEMPLOYE.getValeur()){
                     if (vehicule.getDisponible()){
                         vehicule.setDisponible(false);
                         return new Affectation(idAffectation, vehicule, employe, LocalDateTime.now(), null, true);
@@ -580,14 +649,14 @@ public class ParcAutomobile {
 
     public boolean finirAffectation(int id){
         for (Affectation affectation : listeAffectation){
-            if (affectation.getId() == id){
+            if (affectation.getId() == id && affectation.getActif()){
                 affectation.setActif(false);
                 affectation.getVehicule().setDisponible(true);
                 ParcAutomobile.nbVehiculeDisponible++;
                 affectation.setDateRetour(LocalDateTime.now());
-                int augmentationKm = recupererEntier("Kilometrage effectue");
+                int augmentationKm = recupererEntier("Kilometrage effectue pendant l affectation");
                 affectation.getVehicule().setKilometrage(affectation.getVehicule().getKilometrage() + augmentationKm);
-                if(augmentationKm >= 10000){//limite kilometrage
+                if(augmentationKm >= Variable.NOMBREKILOMETREALERTE.getValeur()){
                     System.out.println("\u001B[31m" + "Le kilometrage effectue necessite de faire une revision " + "\u001B[0m");
                 }
                 return true;
