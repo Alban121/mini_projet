@@ -160,12 +160,13 @@ public class ParcAutomobile {
             System.out.println("1. Afficher les employes");
             System.out.println("2. Ajouter un employe ");
             System.out.println("3. Retirer un employe");
-            System.out.println("4. Retour au menu principal");
-            int choix = faireChoix("Choisissez une option : ", 1, 4);
+            System.out.println("4. Rechercher un employe");
+            System.out.println("5. Retour au menu principal");
+            int choix = faireChoix("Choisissez une option : ", 1, 5);
 
             switch (choix) {
                 case 1:
-                    afficherEmploye();
+                    afficherEmploye(listeEmploye);
                     break;
                 case 2:
                     ajouterEmploye(creerEmploye());
@@ -174,6 +175,9 @@ public class ParcAutomobile {
                     supprimerEmploye(recupererEntier("ID de l employe a supprime ?"));
                     break;
                 case 4:
+                    rechercherEmploye();
+                    break;
+                case 5:
                     return;
             }
 
@@ -368,7 +372,7 @@ public class ParcAutomobile {
 
     public void rechercherVehicule(){
         do {
-            System.out.println("Quel type de recherche voulez vous faire ?\n 1 : id. 2 : immatriculation 3 : Critere multiples\n4 : quitter la recherche");
+            System.out.println("Quel type de recherche voulez vous faire ?\n |1 : Id |2 : Immatriculation |3 : Critere multiples\n |4 : quitter la recherche");
             int choix = faireChoix("Choisissez une option", 1, 4);
             switch (choix){
                 case 1:
@@ -390,7 +394,7 @@ public class ParcAutomobile {
         ArrayList<Vehicule> listeFiltree = new ArrayList<>(this.listeVehicule);
 
         while (true) {
-            System.out.println("\n=== RECHERCHE AVANCÉE (" + listeFiltree.size() + " résultat(s) trouvé(s)) ===");
+            System.out.println("\n=== RECHERCHE AVANCEE VEHICULE (" + listeFiltree.size() + " résultat(s) trouvé(s)) ===");
             afficherVehicule(listeFiltree);
 
             System.out.println("\nQue souhaitez-vous faire ?");
@@ -401,28 +405,28 @@ public class ParcAutomobile {
             System.out.println("5. Réinitialiser la recherche (Tout voir)");
             System.out.println("6. Quitter la recherche");
 
-            int choix = faireChoix("Votre choix : ", 1, 5);
+            int choix = faireChoix("Votre choix : ", 1, 6);
 
             switch (choix){
                 case 1:
-                    listeFiltree = rechercherVehiculeMarque(listeFiltree, recupererString("Quelle marque recherchez-vous ? : "));
+                    listeFiltree = rechercherVehiculeMarque(listeFiltree, recupererString("Quelle marque recherchez vous ? : "));
                 break;
 
                 case 2:
-                    listeFiltree = rechercherVehiculeKilometrage(listeFiltree, recupererEntier("Kilométrage maximum autorisé ? : "));
+                    listeFiltree = rechercherVehiculeKilometrage(listeFiltree, recupererEntier("Kilometrage maximum autorise ? : "));
                 break;
 
                 case 3:
-                    listeFiltree = rechercherVehiculeType(listeFiltree, recupererString("Quel type de vehicule chercher vous ? (moto, voiture ou utilitaire)"));
+                    listeFiltree = rechercherVehiculeType(listeFiltree, recupererString("Quel type de vehicule cherchez vous ? (moto, voiture ou utilitaire)"));
                     break;
                 case 4:
-                    listeFiltree = rechercherVehiculeModele(listeFiltree, recupererString("Quelle modele chercher vous ?"));
+                    listeFiltree = rechercherVehiculeModele(listeFiltree, recupererString("Quelle modele cherchez vous ?"));
                     break;
 
 
                 case 5:
                 listeFiltree = new ArrayList<>(this.listeVehicule);
-                System.out.println("Filtres réinitialisés.");
+                System.out.println("Filtres reinitialises.");
                 break;
                 case 6:
                     return;
@@ -521,13 +525,13 @@ public class ParcAutomobile {
         }
     }
 
-    public void afficherEmploye() {
-        if (!this.listeEmploye.isEmpty()) {
-            listeEmploye.sort(Comparator.comparing(Employe::getNom));
+    public void afficherEmploye(ArrayList<Employe> listeEmployeAfficher) {
+        if (!listeEmployeAfficher.isEmpty()) {
+            listeEmployeAfficher.sort(Comparator.comparing(Employe::getNom));
             System.out.println("Employe du parc automobile : " +
                     "\n(pour plus d informations sur un employe en particulier utilise la fonction de recherche par id)");
             System.out.println("\tID\t\tNom\t\tPrenom");
-            for (Employe employe : listeEmploye) {
+            for (Employe employe : listeEmployeAfficher) {
                 System.out.println("\t" + employe.getId() + "\t\t" + employe.getNom() + "\t\t" + employe.getPrenom());
             }
         } else {
@@ -535,7 +539,64 @@ public class ParcAutomobile {
         }
     }
 
-    public Employe rechercherEmployeId(int id) {
+    public void rechercherEmploye(){
+        do {
+            System.out.println("Quel type de recherche voulez vous faire ?\n |1 : Id |2 : Critere multiples\n |3 : quitter la recherche");
+            int choix = faireChoix("Choisissez une option", 1, 3);
+            switch (choix){
+                case 1:
+                    System.out.println(rechercherEmployeId(listeEmploye, recupererEntier("Id de l employe recherche ?")));
+                    break;
+                case 2:
+                    rechercheEmployeMultiCritere();
+                    break;
+                case 3:
+                    return;
+            }
+        }while (true);
+    }
+
+    public void rechercheEmployeMultiCritere() {
+        ArrayList<Employe> listeFiltree = new ArrayList<>(this.listeEmploye);
+
+        while (true) {
+            System.out.println("\n=== RECHERCHE AVANCEE EMPLOYE (" + listeFiltree.size() + " résultat(s) trouvé(s)) ===");
+            afficherEmploye(listeFiltree);
+
+            System.out.println("\nQue souhaitez-vous faire ?");
+            System.out.println("1. Ajouter un filtre : Nom");
+            System.out.println("2. Ajouter un filtre : Prenom");
+            System.out.println("3. Ajouter un filtre : Poste");
+            System.out.println("4. Réinitialiser la recherche (Tout voir)");
+            System.out.println("5. Quitter la recherche");
+
+            int choix = faireChoix("Votre choix : ", 1, 5);
+
+            switch (choix){
+                case 1:
+                    listeFiltree = rechercherEmployesParNom(listeFiltree, recupererString("Quelle nom recherchez vous ? : "));
+                    break;
+
+                case 2:
+                    listeFiltree = rechercherEmployesParPrenom(listeFiltree, recupererString("Quelle prenom recherchez vous  ? : "));
+                    break;
+
+                case 3:
+                    listeFiltree = rechercherEmployesParPoste(listeFiltree, recupererString("Quel poste recherchez vous ?"));
+                    break;
+
+                case 4:
+                    listeFiltree = new ArrayList<>(this.listeEmploye);
+                    System.out.println("Filtres reinitialises.");
+                    break;
+                case 5:
+                    return;
+            }
+        }
+    }
+
+
+    public Employe rechercherEmployeId(ArrayList<Employe> listeEmploye, int id) {
         for (Employe employe : listeEmploye) {
             if (employe.getId() == id) {
                 return employe;
@@ -544,7 +605,7 @@ public class ParcAutomobile {
         return null;
     }
 
-    public ArrayList<Employe> rechercherEmployesParNom(String nom) {
+    public ArrayList<Employe> rechercherEmployesParNom(ArrayList<Employe> listeEmploye, String nom) {
         ArrayList<Employe> resultats = new ArrayList<>();
         for (Employe employe : listeEmploye) {
             if (employe.getNom().equalsIgnoreCase(nom)) {
@@ -554,7 +615,7 @@ public class ParcAutomobile {
         return resultats;
     }
 
-    public ArrayList<Employe> rechercherEmployesParPrenom(String prenom) {
+    public ArrayList<Employe> rechercherEmployesParPrenom(ArrayList<Employe> listeEmploye, String prenom) {
         ArrayList<Employe> resultats = new ArrayList<>();
         for (Employe employe : listeEmploye) {
             if (employe.getPrenom().equalsIgnoreCase(prenom)) {
@@ -564,7 +625,7 @@ public class ParcAutomobile {
         return resultats;
     }
 
-    public ArrayList<Employe> rechercherEmployesParPoste(String poste) {
+    public ArrayList<Employe> rechercherEmployesParPoste(ArrayList<Employe> listeEmploye, String poste) {
         ArrayList<Employe> resultats = new ArrayList<>();
         for (Employe employe : listeEmploye) {
             if (employe.getPoste().equalsIgnoreCase(poste)) {
@@ -612,7 +673,7 @@ public class ParcAutomobile {
             int idAffectation = recupererEntier("Quel est l id de l affectation");
 
             Vehicule vehicule = rechercherVehiculeId(listeVehicule,idVehicule);
-            Employe employe = rechercherEmployeId(idEmploye);
+            Employe employe = rechercherEmployeId(listeEmploye, idEmploye);
             if (vehicule != null && employe != null) {
                 int limite = 0;
                 for (Affectation a : listeAffectation){
