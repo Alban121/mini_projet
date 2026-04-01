@@ -16,6 +16,7 @@ public sealed abstract class Vehicule permits Utilitaire, Moto, Voiture {
         this.immatriculation = immatriculation;
         this.kilometrage = kilometrage;
         this.disponible = disponible;
+        ParcAutomobile.nbVehiculeDisponible++;
     }
     public Vehicule(int id, String marque, String modele, String immatriculation, int kilometrage){
         this(id, marque, modele, immatriculation, kilometrage, true);//appelle le contructeur precedent avec disponible vrai
