@@ -318,7 +318,14 @@ public class ParcAutomobile {
         System.out.println("3. Moto");
         int type = faireChoix("Votre choix : ", 1, 3);
 
-        int id = recupererEntier("Entrez l ID : ");
+        int id;
+        while (true) {
+            id = recupererEntier("Entrez l'ID : ");
+            if (!idVehiculeExiste(id)) {
+                break; // L'ID est libre, on sort de la boucle
+            }
+            System.out.println("\u001B[31m" + "Erreur : Cet ID de véhicule existe déjà. Veuillez en choisir un autre." + "\u001B[0m");
+        }
         String marque = recupererString("Entrez la marque : ");
         String modele = recupererString("Entrez le modele : ");
         String immatriculation = recupererString("Entrez l immatriculation : ");
@@ -492,7 +499,7 @@ public class ParcAutomobile {
 
     public void rechercherVehicule(){
         do {
-            System.out.println("Quel type de recherche voulez vous faire ?\n |1 : Id |2 : Immatriculation |3 : Critere multiples\n |4 : quitter la recherche");
+            System.out.println("Quel type de recherche voulez vous faire ?\n 1. Id \n 2. Immatriculation \n 3. Critere multiples\n 4. quitter la recherche");
             int choix = faireChoix("Choisissez une option", 1, 4);
             switch (choix){
                 case 1:
@@ -615,7 +622,14 @@ public class ParcAutomobile {
     //Employe
     public Employe creerEmploye(){
         System.out.println("--- Creation d un nouvel employe ---");
-        int id = recupererEntier("Entrez l ID : ");//rajouter un check sur l id pour qu il soit unique
+        int id;
+        while (true) {
+            id = recupererEntier("Entrez l'ID : ");
+            if (!idEmployeExiste(id)) {
+                break;
+            }
+            System.out.println("\u001B[31m" + "Erreur : Cet ID d'employé existe déjà." + "\u001B[0m");
+        }
         String nom = recupererString("Entrez le nom : ");
         String prenom = recupererString("Entrez le prenom : ");
         String poste = recupererString("Entrez le poste : ");
@@ -841,8 +855,14 @@ public class ParcAutomobile {
         while (true) {
             int idEmploye = recupererEntier("Quel est l ID de l employe ?");
             int idVehicule = recupererEntier("Quel est l ID du vehicule");
-            int idAffectation = recupererEntier("Quel est l id de l affectation");
-
+            int idAffectation;
+            while (true) {
+                idAffectation = recupererEntier("Quel est l'id de l'affectation ?");
+                if (!idAffectationExiste(idAffectation)) {
+                    break;
+                }
+                System.out.println("\u001B[31m" + "Erreur : Cet ID d'affectation est déjà utilisé." + "\u001B[0m");
+            }
             Vehicule vehicule = rechercherVehiculeId(listeVehicule,idVehicule);
             Employe employe = rechercherEmployeId(listeEmploye, idEmploye);
             if (vehicule != null && employe != null) {
@@ -1013,5 +1033,26 @@ public class ParcAutomobile {
             }
         }
         return null;
+    }
+
+    private boolean idVehiculeExiste(int id) {
+        for (Vehicule v : listeVehicule) {
+            if (v.getId() == id) return true;
+        }
+        return false;
+    }
+
+    private boolean idEmployeExiste(int id) {
+        for (Employe e : listeEmploye) {
+            if (e.getId() == id) return true;
+        }
+        return false;
+    }
+
+    private boolean idAffectationExiste(int id) {
+        for (Affectation a : listeAffectation) {
+            if (a.getId() == id) return true;
+        }
+        return false;
     }
 }
