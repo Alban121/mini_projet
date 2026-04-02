@@ -106,8 +106,9 @@ public class ParcAutomobile {
             System.out.println("3. Terminer une affectation ");
             System.out.println("4. Historique des affectations");
             System.out.println("5. Rechercher une affectation");
-            System.out.println("6. Retour au menu principal");
-            int choix = faireChoix("Choisissez une option : ", 1, 6);
+            System.out.println("6. Modifier une affectation");
+            System.out.println("7. Retour au menu principal");
+            int choix = faireChoix("Choisissez une option : ", 1, 7);
             switch (choix) {
                 case 1:
                     afficherAffectation(true);//true pour les actives
@@ -130,6 +131,9 @@ public class ParcAutomobile {
                     System.out.println(rechercherAffectationID(recupererEntier("Quel est l Id de l affectation recherche ?")));
                     break;
                 case 6:
+                    modifierAffectation();
+                    break;
+                case 7:
                     return;
             }
 
@@ -308,7 +312,6 @@ public class ParcAutomobile {
     public Vehicule creerVehicule() {
         System.out.println("--- Ajout d'un nouveau véhicule ---");
 
-        // 1. On demande le type en premier
         System.out.println("Quel type de véhicule souhaitez-vous ajouter ?");
         System.out.println("1. Voiture");
         System.out.println("2. Utilitaire");
@@ -425,13 +428,12 @@ public class ParcAutomobile {
 
     public void modifierVehicule() {
         System.out.println("--- Modification d'un véhicule ---");
-        int id = recupererEntier("Entrez l'ID du véhicule à modifier : ");
+        int id = recupererEntier("Entrez l ID du vehicule à modifier : ");
 
-        // N'oublie pas qu'on doit passer la liste source à ta méthode de recherche maintenant !
         Vehicule vehicule = rechercherVehiculeId(this.listeVehicule, id);
 
         if (vehicule == null) {
-            System.out.println("⚠️ Véhicule introuvable.");
+            System.out.println("Vehicule introuvable.");
             return;
         }
 
@@ -707,7 +709,13 @@ public class ParcAutomobile {
             int choix = faireChoix("Choisissez une option", 1, 3);
             switch (choix){
                 case 1:
-                    System.out.println(rechercherEmployeId(listeEmploye, recupererEntier("Id de l employe recherche ?")));
+                    Employe e = rechercherEmployeId(listeEmploye, recupererEntier("Id de l employe recherche ?"));
+                    System.out.println(e);
+                    System.out.println("Voulez vous afficher les affectations en rapport avec cette emplote ?");
+                    if (faireChoix("1 : oui 2 : non", 1, 2) == 1){
+                        afficherAffectationEmploye(e);
+                    }
+
                     break;
                 case 2:
                     rechercheEmployeMultiCritere();
@@ -871,6 +879,43 @@ public class ParcAutomobile {
         ParcAutomobile.nbVehiculeDisponible--;
     }
 
+    public void afficherAffectationEmploye(Employe employe) {
+        if (employe == null) {
+            System.out.println("Impossible d afficher les affectations : l'employe est introuvable.");
+            return;
+        }
+
+        System.out.println("\n=== Dossier des affectations de " + employe.getPrenom() + " " + employe.getNom() + " ===");
+
+        // 1 boucle : Les affectations actives
+        System.out.println("\n--- EN COURS ---");
+        boolean aDesAffectationsActives = false;
+        for (Affectation affectation : this.listeAffectation) {
+            if (affectation.getEmploye().getId() == employe.getId() && affectation.getActif()) {
+                System.out.println(affectation);
+                aDesAffectationsActives = true;
+            }
+        }
+        if (!aDesAffectationsActives) {
+            System.out.println("Aucune affectation en cours.");
+        }
+
+        // 2  inactives
+        System.out.println("\n--- HISTORIQUE (Terminées) ---");
+        boolean aDesAffectationsInactives = false;
+        for (Affectation affectation : this.listeAffectation) {
+            // On cherche le même employe mais cette fois avec !getActif() (faux)
+            if (affectation.getEmploye().getId() == employe.getId() && !affectation.getActif()) {
+                System.out.println(affectation);
+                aDesAffectationsInactives = true;
+            }
+        }
+        if (!aDesAffectationsInactives) {
+            System.out.println("Aucune affectation dans l'historique.");
+        }
+        System.out.println("=========================================");
+    }
+
     public boolean finirAffectation(int id){
         for (Affectation affectation : listeAffectation){
             if (affectation.getId() == id && affectation.getActif()){
@@ -889,6 +934,78 @@ public class ParcAutomobile {
         return false;
     }
 
+    public void modifierAffectation() {
+        System.out.println("--- Modification d'une affectation ---");
+
+        Affectation affectation = rechercherAffectationID(recupererEntier("Quel est l Id de l affectation que vous voulez modifier ?"));
+
+        if (affectation == null) {
+            System.out.println("Affectation introuvable.");
+            return;
+        }
+        if (!affectation.getActif()) {
+            System.out.println("Impossible de modifier une affectation terminée (Historique).");
+            return;
+        }
+        while (true) {
+            System.out.println("\nVous modifiez l affectation n " + affectation.getId() + " (" + affectation.getEmploye().getNom() + " - " + affectation.getVehicule().getMarque() + " " +  affectation.getVehicule().getModele() + ")");
+            System.out.println("Que souhaitez-vous modifier ?");
+            System.out.println("1. Changer l'employe");
+            System.out.println("2. Changer le vehicule");
+            System.out.println("3. Terminer les modifications");
+
+            int choix = faireChoix("Votre choix : ", 1, 3);
+
+            switch (choix) {
+                case 1:
+                    Employe nouvelEmploye = rechercherEmployeId(listeEmploye, recupererEntier("Entrez l'ID du nouvel employé : "));
+
+                    if (nouvelEmploye == null) {
+                        System.out.println("Employe introuvable.");
+                    } else if (nouvelEmploye.getId() == affectation.getEmploye().getId()) {
+                        System.out.println("L affectation est deja assignee à cet employe.");
+                    } else {
+                        // Vérification de la limite de 3 affectations pour le nouvel employé
+                        int limite = 0;
+                        for (Affectation a : listeAffectation) {
+                            if (a.getActif() && a.getEmploye().getId() == nouvelEmploye.getId()) {
+                                limite++;
+                            }
+                        }
+                        if (limite >= 3) {
+                            System.out.println("Le nouvel employe possede deja le maximum d affectations autorisees (" +  Variable.LIMITEAFFECTATIONEMPLOYE + ").");
+                        } else {
+                            affectation.setEmploye(nouvelEmploye);
+                            System.out.println("Employe mis à jour avec succes.");
+                        }
+                    }
+                    break;
+
+                case 2:
+                    Vehicule nouveauVehicule = rechercherVehiculeId(this.listeVehicule, recupererEntier("Entrez l'ID du nouveau véhicule : "));
+
+                    if (nouveauVehicule == null) {
+                        System.out.println("Vehicule introuvable.");
+                    } else if (nouveauVehicule.getId() == affectation.getVehicule().getId()) {
+                        System.out.println("L affectation utilise déjà ce vehicule.");
+                    } else if (!nouveauVehicule.getDisponible()) {
+                        System.out.println("Le nouveau véhicule choisi est actuellement indisponible.");
+                    } else {
+                        affectation.getVehicule().setDisponible(true);
+
+                        nouveauVehicule.setDisponible(false);
+
+                        affectation.setVehicule(nouveauVehicule);
+
+                        System.out.println("Vehicule mis à jour avec succes.");
+                    }
+                    break;
+
+                case 3:
+                    return;
+            }
+        }
+    }
     public Affectation rechercherAffectationID(int id){
         for (Affectation affectation : listeAffectation) {
             if (affectation.getId() == id) {
