@@ -143,8 +143,9 @@ public class ParcAutomobile {
             System.out.println("2. Ajouter un vehicule ");
             System.out.println("3. Retirer un vehicule");
             System.out.println("4. Rechercher un vehicule");
-            System.out.println("5. Retour au menu principal");
-            int choix = faireChoix("Choisissez une option : ", 1, 5);
+            System.out.println("5. Modifier vehicule");
+            System.out.println("6. Retour au menu principal");
+            int choix = faireChoix("Choisissez une option : ", 1, 6);
 
             switch (choix) {
                 case 1:
@@ -160,6 +161,9 @@ public class ParcAutomobile {
                     rechercherVehicule();
                     break;
                 case 5:
+                    modifierVehicule();
+                    break;
+                case 6:
                     return;
             }
 
@@ -173,8 +177,9 @@ public class ParcAutomobile {
             System.out.println("2. Ajouter un employe ");
             System.out.println("3. Retirer un employe");
             System.out.println("4. Rechercher un employe");
-            System.out.println("5. Retour au menu principal");
-            int choix = faireChoix("Choisissez une option : ", 1, 5);
+            System.out.println("5. Rechercher un employe");
+            System.out.println("6. Retour au menu principal");
+            int choix = faireChoix("Choisissez une option : ", 1, 6);
 
             switch (choix) {
                 case 1:
@@ -190,6 +195,9 @@ public class ParcAutomobile {
                     rechercherEmploye();
                     break;
                 case 5:
+                    modifierEmploye();
+                    break;
+                case 6:
                     return;
             }
 
@@ -415,6 +423,71 @@ public class ParcAutomobile {
         }
     }
 
+    public void modifierVehicule() {
+        System.out.println("--- Modification d'un véhicule ---");
+        int id = recupererEntier("Entrez l'ID du véhicule à modifier : ");
+
+        // N'oublie pas qu'on doit passer la liste source à ta méthode de recherche maintenant !
+        Vehicule vehicule = rechercherVehiculeId(this.listeVehicule, id);
+
+        if (vehicule == null) {
+            System.out.println("⚠️ Véhicule introuvable.");
+            return;
+        }
+
+        while (true) {
+            System.out.println("\nVous modifiez : " + vehicule.getMarque() + " " + vehicule.getModele());
+            System.out.println("Que souhaitez-vous modifier ?");
+            System.out.println("1. Marque");
+            System.out.println("2. Modèle");
+            System.out.println("3. Immatriculation");
+            System.out.println("4. Kilometrage");
+
+            // Option dynamique selon le type de vehicule
+            if (vehicule instanceof Voiture) {
+                System.out.println("5. Nombre de portes");
+            } else if (vehicule instanceof Moto) {
+                System.out.println("5. Cylindrée");
+            } else if (vehicule instanceof Utilitaire) {
+                System.out.println("5. Taille (Volume)");
+            }
+
+            System.out.println("6. Terminer les modifications");
+
+            int choix = faireChoix("Votre choix : ", 1, 6);
+
+            switch (choix) {
+                case 1:
+                    vehicule.setMarque(recupererString("Nouvelle marque : "));
+                    break;
+                case 2:
+                    vehicule.setModele(recupererString("Nouveau modèle : "));
+                    break;
+                case 3:
+                    vehicule.setImmatriculation(recupererString("Nouvelle immatriculation : "));
+                    break;
+                case 4:
+                    // Ton setter gère déjà la vérification pour ne pas baisser le kilométrage, c'est parfait !
+                    vehicule.setKilometrage(recupererEntier("Nouveau kilométrage : "));
+                    break;
+                case 5:
+                    // Cast du vehicule pour acceder aux methodes de la classe fille
+                    if (vehicule instanceof Voiture) {
+                        ((Voiture) vehicule).setNbPorte(recupererEntier("Nouveau nombre de portes : "));
+                    } else if (vehicule instanceof Moto) {
+                        ((Moto) vehicule).setCylindre(recupererEntier("Nouvelle cylindre : "));
+                    } else if (vehicule instanceof Utilitaire) {
+                        ((Utilitaire) vehicule).setTaille(recupererEntier("Nouvelle taille : "));
+                    } else {
+                        System.out.println("Option invalide.");
+                    }
+                    break;
+                case 6:
+                    return;
+            }
+        }
+    }
+
     public void rechercherVehicule(){
         do {
             System.out.println("Quel type de recherche voulez vous faire ?\n |1 : Id |2 : Immatriculation |3 : Critere multiples\n |4 : quitter la recherche");
@@ -581,6 +654,50 @@ public class ParcAutomobile {
             }
         } else {
             System.out.println("Il n'y a aucun employe dans le parc automobile");
+        }
+    }
+
+    public void modifierEmploye() {
+        System.out.println("--- Modification d un employe ---");
+        int id = recupererEntier("Entrez l'ID de l'employe à modifier : ");
+        Employe employe = rechercherEmployeId(listeEmploye, id);
+
+        if (employe == null) {
+            System.out.println("Employe introuvable.");
+            return;
+        }
+
+        while (true) {
+            System.out.println("\nVous modifiez : " + employe.getPrenom() + " " + employe.getNom());
+            System.out.println("Que souhaitez-vous modifier ?");
+            System.out.println("1. Nom");
+            System.out.println("2. Prénom");
+            System.out.println("3. Poste");
+            System.out.println("4. Email");
+            System.out.println("5. Terminer les modifications");
+
+            int choix = faireChoix("Votre choix : ", 1, 5);
+
+            switch (choix) {
+                case 1:
+                    employe.setNom(recupererString("Nouveau nom : "));
+                    System.out.println("Nom mis à jour.");
+                    break;
+                case 2:
+                    employe.setPrenom(recupererString("Nouveau prenom : "));
+                    System.out.println("Prénom mis à jour.");
+                    break;
+                case 3:
+                    employe.setPoste(recupererString("Nouveau poste : "));
+                    System.out.println("Poste mis à jour.");
+                    break;
+                case 4:
+                    employe.setEmail(recupererString("Nouvel email : "));
+                    System.out.println("Email mis à jour.");
+                    break;
+                case 5:
+                    return;
+            }
         }
     }
 

@@ -7,7 +7,15 @@ final class Moto extends Vehicule{
         this.cylindre = cylindre;
         nbMoto++;
     }
-
+    public int getCylindre(){
+        return cylindre;
+    }
+    public void setCylindre(int cylindre){
+        if (cylindre < 0){
+            return;
+        }
+        this.cylindre = cylindre;
+    }
     @Override
     public String toCSV() {
         return super.toCSV() + ";" + this.cylindre;

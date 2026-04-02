@@ -8,6 +8,16 @@ final class Voiture extends Vehicule{
         nbVoiture++;
     }
 
+    public int getNbPorte(){
+        return nbPorte;
+    }
+    public void setNbPorte(int nbPorte){
+        if (nbPorte < 0){
+            return;
+        }
+        this.nbPorte = nbPorte;
+    }
+
     @Override
     public String toCSV() {
         return super.toCSV() + ";" + this.nbPorte;

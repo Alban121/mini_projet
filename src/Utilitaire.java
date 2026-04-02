@@ -7,6 +7,15 @@ final class Utilitaire extends Vehicule {
         this.taille = taille;
         nbUtilitaire++;
     }
+    public int getTaille(){
+        return taille;
+    }
+    public void setTaille(int taille){
+        if (taille < 0){
+            return;
+        }
+        this.taille = taille;
+    }
 
     @Override
     public String toCSV() {
