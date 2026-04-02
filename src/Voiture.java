@@ -9,6 +9,10 @@ final class Voiture extends Vehicule{
     }
 
     @Override
+    public String toCSV() {
+        return super.toCSV() + ";" + this.nbPorte;
+    }
+    @Override
     public String toString() {
         return super.toString() + "\n|Nombre de porte : " + this.nbPorte ;
     }

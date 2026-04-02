@@ -9,6 +9,10 @@ final class Moto extends Vehicule{
     }
 
     @Override
+    public String toCSV() {
+        return super.toCSV() + ";" + this.cylindre;
+    }
+    @Override
     public String toString() {
         return super.toString() + "\n|Cylindre : " + this.cylindre ;
     }

@@ -9,6 +9,11 @@ final class Utilitaire extends Vehicule {
     }
 
     @Override
+    public String toCSV() {
+        return super.toCSV() + ";" + this.taille;
+    }
+
+    @Override
     public String toString() {
         return super.toString() + "\n|Taille : " + this.taille ;
     }

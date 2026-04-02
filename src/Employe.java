@@ -31,6 +31,10 @@ public class Employe {
     public void setEmail(String newEmail){this.email = newEmail;}
 
     //métohde
+    public String toCSV() {//Pour avoir le format du stockage dans le .txt
+        return this.getId() + ";" + this.getNom() + ";" + this.getPrenom() + ";" + this.getPoste() + ";" + this.getEmail();
+    }
+
     @Override
     public String toString() {
         return "Information Employé n°" + this.id +

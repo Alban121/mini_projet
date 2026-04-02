@@ -52,6 +52,9 @@ public sealed abstract class Vehicule permits Utilitaire, Moto, Voiture {
         this.disponible = newDisponible;
     }
 
+    public String toCSV() {//Pour avoir le format du stockage dans le .txt
+        return this.getClass().getSimpleName() + ";" + this.getId() + ";" + this.getMarque() + ";" + this.getModele() + ";" + this.getImmatriculation() + ";" + this.getKilometrage();
+    }
     //Methode
     @Override
     public String toString() {

@@ -1,10 +1,12 @@
-import javax.swing.text.Utilities;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Scanner;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.io.IOException;
 
 public class ParcAutomobile {
     //Attributs
@@ -24,8 +26,8 @@ public class ParcAutomobile {
     }
 
     //Methodes
-    //Helpers
 
+    //Helpers
     private int recupererEntier(String entierDemander) {
         Scanner scanner = new Scanner(System.in);
         while (true) {
@@ -71,7 +73,8 @@ public class ParcAutomobile {
             System.out.println("1. Gérer les Véhicules");
             System.out.println("2. Gérer les Employés");
             System.out.println("3. Gérer les Affectations");
-            System.out.println("4. Quitter");
+            System.out.println("4. Enregistre les modificationts dans la base de donnee (fichier.txt)");// Le mieux serait de le faire automatiquement quand on quitte le projet mais nous n'avons pas envie d'avoir des donnees de tests dans nos fichier .txt
+            System.out.println("5. Quitter");
             int choix = faireChoix("Choisissez une option : ", 1, 4);
             switch (choix) {
                 case 1:
@@ -84,6 +87,11 @@ public class ParcAutomobile {
                     menuAffectation();
                     break;
                 case 4:
+                    sauvegarderEmployes();
+                    sauvegarderVehicules();
+                    System.out.println("\n Sauvegarde reussie.");
+                    break;
+                case 5:
                     return;
             }
         } while (true);
@@ -97,8 +105,9 @@ public class ParcAutomobile {
             System.out.println("2. Ajouter une affectation ");
             System.out.println("3. Terminer une affectation ");
             System.out.println("4. Historique des affectations");
-            System.out.println("5. Retour au menu principal");
-            int choix = faireChoix("Choisissez une option : ", 1, 5);
+            System.out.println("5. Rechercher une affectation");
+            System.out.println("6. Retour au menu principal");
+            int choix = faireChoix("Choisissez une option : ", 1, 6);
             switch (choix) {
                 case 1:
                     afficherAffectation(true);//true pour les actives
@@ -118,6 +127,9 @@ public class ParcAutomobile {
                     afficherAffectation(false);//false pour l'historique
                     break;
                 case 5:
+                    System.out.println(rechercherAffectationID(recupererEntier("Quel est l Id de l affectation recherche ?")));
+                    break;
+                case 6:
                     return;
             }
 
@@ -184,7 +196,7 @@ public class ParcAutomobile {
         } while (true);
     }
 
-    //Chargempent fichier .txt
+    //Chargempent et sauvegarde fichier .txt
     public void chargerEmployes() {
         try {
             File fichier = new File("employes.txt");
@@ -248,6 +260,39 @@ public class ParcAutomobile {
 
         } catch (FileNotFoundException e) {
             System.out.println("Fichier vehicules.txt introuvable. Liste vide.");
+        }
+    }
+
+    public void sauvegarderEmployes() {
+        try {
+            // Le PrintWriter +etFileWriter permet d écrire dans un fichier (et de le créer si il existe pas)
+            PrintWriter ecrivain = new PrintWriter(new FileWriter("employes.txt"));
+
+            for (Employe employe : this.listeEmploye) {
+                ecrivain.println(employe.toCSV()); // Écrit la ligne et passe à la suivante
+            }
+
+            ecrivain.close();
+            System.out.println("Sauvegarde des employés réussie.");
+
+        } catch (IOException e) {
+            System.out.println("Erreur lors de la sauvegarde des employes : " + e.getMessage());
+        }
+    }
+
+    public void sauvegarderVehicules() {
+        try {
+            PrintWriter ecrivain = new PrintWriter(new FileWriter("vehicules.txt"));
+
+            for (Vehicule vehicule : this.listeVehicule) {
+                ecrivain.println(vehicule.toCSV());
+            }
+
+            ecrivain.close();
+            System.out.println("Sauvegarde des vehicules reussie.");
+
+        } catch (IOException e) {
+            System.out.println("Erreur lors de la sauvegarde des vehicules : " + e.getMessage());
         }
     }
 
@@ -647,6 +692,7 @@ public class ParcAutomobile {
             listeAffectation.sort(Comparator.comparing(Affectation::getDateAffectation).reversed());//trie des affectations dans l'ordre plus recent au plus ancien
             boolean auMoinsUn = false;
             System.out.println(titre);
+            System.out.println(" (Pour plus d information sur une affectation utilisez la recherche par ID");
 
             for (Affectation affectation : listeAffectation) {
                 if (affectation.getActif() == active) {
@@ -726,4 +772,12 @@ public class ParcAutomobile {
         return false;
     }
 
+    public Affectation rechercherAffectationID(int id){
+        for (Affectation affectation : listeAffectation) {
+            if (affectation.getId() == id) {
+                return affectation;
+            }
+        }
+        return null;
+    }
 }
