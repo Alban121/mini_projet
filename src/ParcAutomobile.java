@@ -705,7 +705,7 @@ public class ParcAutomobile {
 
     public void rechercherEmploye(){
         do {
-            System.out.println("Quel type de recherche voulez vous faire ?\n |1 : Id |2 : Critere multiples\n |3 : quitter la recherche");
+            System.out.println("Quel type de recherche voulez vous faire ?\n 1; Id \n 2. Critere multiples\n 3. quitter la recherche");
             int choix = faireChoix("Choisissez une option", 1, 3);
             switch (choix){
                 case 1:

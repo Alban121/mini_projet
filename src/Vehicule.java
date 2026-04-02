@@ -43,7 +43,7 @@ public sealed abstract class Vehicule permits Utilitaire, Moto, Voiture {
     }
     public void setKilometrage(int newKilometrage) {
         if (newKilometrage < this.kilometrage) {
-            System.out.println("La valeur de kilometrage ne peut pas etre inferieur a la valeur precedente\n");
+            System.out.println("La valeur de kilometrage ne peut pas etre inferieur a la valeur precedente (" + this.kilometrage + "\n");
         }else {
             this.kilometrage = newKilometrage;
         }
